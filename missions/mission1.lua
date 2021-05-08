@@ -14,8 +14,8 @@ local p3_position_2_Adr = 0x10C6E0
 return function()
     local weapon_power = memory.read_s16_le(weapon_power_Adr)
 
-    local p1_rotation = memory.read_s16_le(p1_rotation_Adr)
     local p1_wAngle = memory.read_s16_le(p1_wAngle_Adr)
+    local p1_rotation = memory.read_s16_le(p1_rotation_Adr)
     local p1_position_1 = memory.read_s16_le(p1_position_1_Adr)
     local p1_position_2 = memory.read_s16_le(p1_position_2_Adr)
 
