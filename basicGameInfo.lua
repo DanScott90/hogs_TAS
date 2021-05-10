@@ -1,3 +1,4 @@
+assert(loadfile("gameAddresses.lua"))()
 local mission1 = assert(loadfile("missions/mission1.lua"))()
 local mission2 = assert(loadfile("missions/mission2.lua"))()
 --local mission3 = assert(loadfile("missions/mission3.lua"))()
@@ -24,7 +25,6 @@ local mission2 = assert(loadfile("missions/mission2.lua"))()
 --local mission24 = assert(loadfile("missions/mission24.lua"))()
 --local mission25 = assert(loadfile("missions/mission25.lua"))()
 
-local level_Adr = 0x02B5D1
 local textY = 10
 local currentLevel = 0
 
@@ -32,7 +32,7 @@ function displayGameInfo()
     gui.cleartext();
     textY = 10
 
-    currentLevel = memory.read_u8(level_Adr)
+    currentLevel = memory.read_u8(gameAddresses.general.level)
     displayText("LEVEL: "..currentLevel)
 
     for k, v in pairs(getCurrentInfoTable()) do
@@ -41,8 +41,8 @@ function displayGameInfo()
 end
 
 function getCurrentInfoTable()
-    if currentLevel == 1 then return mission1()
-    elseif currentLevel == 2 then return mission2()
+    if currentLevel == 1 then return mission1.getInfoTable()
+    elseif currentLevel == 2 then return mission2.getInfoTable()
     else return {}
     end
 end
