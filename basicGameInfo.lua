@@ -17,7 +17,7 @@ function displayGameInfo()
 end
 
 function getLevelInfoTable(level)
-    if (level > 0 and level <= table.getn(missionInfo)) then
+    if (level > 0 and level <= #missionInfo) then
         return missionInfo[level].getInfoTable()
     end
     return {}
