@@ -23,9 +23,10 @@ local function getPositions(from1, to1, from2, to2, increment1, increment2)
     return positions
 end
 
-local restPositions = getPositions(-4600, -4600, -5100, -5100, 5, 5)
-local startPositions = getPositions(-7880, -7880,  -6580, -6580, 5, 5)
-local startRotations = getRange(2550, 2680, 5)
+local restPositions = getPositions(-4556, -4556, -5077, -5077, 5, 5)
+local startPositions = getPositions(-7819, -7819,  -6555, -6555, 5, 5)
+local startRotations = getRange(2412, 2412, 5)
+local delayFrames = 4
 
 console.log("Complexity: " .. #restPositions * #startPositions * #startRotations)
 console.log("#restPositions: " .. #restPositions)
@@ -36,6 +37,8 @@ for kReset, restPosition in pairs(restPositions) do
     for kStart, startPosition in pairs(startPositions) do
         for kStartRot, startRotation in pairs(startRotations) do
             savestate.load("SaveStates/Mission2Tnt.State")
+
+            for i=1,delayFrames do emu.frameadvance() end
 
             console.log("");
             console.log("start rotation:"..startRotation);
@@ -78,7 +81,7 @@ for kReset, restPosition in pairs(restPositions) do
             emu.frameadvance()
 
             --SetBackToRestPos
-            memory.write_s16_le(gameAddresses.mission2.p1_rotation, 836)
+            memory.write_s16_le(gameAddresses.mission2.p1_rotation, 636)
             memory.write_s16_le(gameAddresses.mission2.p1_position_1, restPosition[1])
             memory.write_s16_le(gameAddresses.mission2.p1_position_2, restPosition[2])
             emu.frameadvance()
