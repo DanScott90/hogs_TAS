@@ -23,76 +23,71 @@ local function getPositions(from1, to1, from2, to2, increment1, increment2)
     return positions
 end
 
-local restPositions = getPositions(-4556, -4556, -5077, -5077, 5, 5)
 local startPositions = getPositions(-7819, -7819,  -6555, -6555, 5, 5)
-local startRotations = getRange(2412, 2412, 5)
-local delayFrames = getRange(4, 50, 1)
---delayFrames 4, 11, 23, 24, 28, 34, 38, 43 seem to be successful with current savestate, can uncomment below (remove --)
---delayFrames = {4, 11, 23, 24, 28, 34, 38, 43}
+local startRotations = getRange(2408, 2415, 1)
+local delayFrames = getRange(0, 20, 1)
+--delayFrames 6, 19, 20 seems to work
+--delayFrames = {6, 19, 20}
 
-console.log("Complexity: " .. #restPositions * #startPositions * #startRotations * #delayFrames)
-console.log("#restPositions: " .. #restPositions)
+console.log("Complexity: " .. #startPositions * #startRotations * #delayFrames)
 console.log("#startPositions: " .. #startPositions)
 console.log("#startRotations: " .. #startRotations)
 console.log("#delayFrames: " .. #delayFrames)
 
-for kReset, restPosition in pairs(restPositions) do
-    for kStart, startPosition in pairs(startPositions) do
-        for kStartRot, startRotation in pairs(startRotations) do
-            for kStartRot, numDelayFrames in pairs(delayFrames) do
-                savestate.load("SaveStates/Mission2Tnt.State")
+local waitTntFrames = 65
+local backLefts = 42
+local postTntLefts = 17
+local forwardLefts = 66
+local postTntUps = 69
 
-                for i=1,numDelayFrames do emu.frameadvance() end
+for kStart, startPosition in pairs(startPositions) do
+    for kStartRot, startRotation in pairs(startRotations) do
+        for kStartRot, numDelayFrames in pairs(delayFrames) do
+            savestate.load("SaveStates/Mission2Tnt.State")
 
-                console.log("");
-                console.log("numDelayFrames:"..numDelayFrames);
-                console.log("start rotation:"..startRotation);
-                console.log("start position:"..startPosition[1].." "..startPosition[2]);
-                console.log("rest position:"..restPosition[1].." "..restPosition[2]);
+            for i=1,numDelayFrames do emu.frameadvance() end
 
-                --SetToTntPos
-                memory.write_s16_le(gameAddresses.mission2.p1_rotation, startRotation)
-                memory.write_s16_le(gameAddresses.mission2.p1_position_1, startPosition[1])
-                memory.write_s16_le(gameAddresses.mission2.p1_position_2, startPosition[2])
-                emu.frameadvance()
+            console.log("");
+            console.log("numDelayFrames:"..numDelayFrames);
+            console.log("start rotation:"..startRotation);
+            console.log("start position:"..startPosition[1].." "..startPosition[2]);
 
-                --DropTnt
-                joypad.set({Cross=true}, 1)
-                emu.frameadvance()
-                joypad.set({Cross=true}, 1)
-                emu.frameadvance()
-                for i=1,90 do emu.frameadvance() end
-                --
-                --Walk Past Enemy
-                memory.write_s16_le(gameAddresses.mission2.p1_rotation, 792)
-                memory.write_s16_le(gameAddresses.mission2.p1_position_1, -7368)
-                memory.write_s16_le(gameAddresses.mission2.p1_position_2, -6323)
-                for i=1,90 do emu.frameadvance() end
+            --SetToTntPos
+            memory.write_s16_le(gameAddresses.mission2.p1_rotation, startRotation)
+            memory.write_s16_le(gameAddresses.mission2.p1_position_1, startPosition[1])
+            memory.write_s16_le(gameAddresses.mission2.p1_position_2, startPosition[2])
+            emu.frameadvance()
 
-                --SetToRestPos
-                memory.write_s16_le(gameAddresses.mission2.p1_rotation, 836)
-                memory.write_s16_le(gameAddresses.mission2.p1_position_1, restPosition[1])
-                memory.write_s16_le(gameAddresses.mission2.p1_position_2, restPosition[2])
-                emu.frameadvance()
+            --DropTnt
+            joypad.set({Cross=true}, 1)
+            emu.frameadvance()
+            joypad.set({Cross=true}, 1)
+            emu.frameadvance()
+            for i=1,waitTntFrames do emu.frameadvance() end
 
-                --Move Back and Forward to get valid height
-                joypad.set({Down=true}, 1)
+            --Walk Past Enemy
+            for i=1,backLefts do
+                joypad.set({Down=true, Left=true}, 1)
                 emu.frameadvance()
-                joypad.set({Down=true}, 1)
-                emu.frameadvance()
-                joypad.set({Up=true}, 1)
-                emu.frameadvance()
-                joypad.set({Up=true}, 1)
-                emu.frameadvance()
-
-                --SetBackToRestPos
-                memory.write_s16_le(gameAddresses.mission2.p1_rotation, 636)
-                memory.write_s16_le(gameAddresses.mission2.p1_position_1, restPosition[1])
-                memory.write_s16_le(gameAddresses.mission2.p1_position_2, restPosition[2])
-                emu.frameadvance()
-
-                for i=1,1300 do emu.frameadvance() end
             end
+            for i=1,postTntLefts do
+                joypad.set({Left=true}, 1)
+                emu.frameadvance()
+            end
+            for i=1,forwardLefts do
+                joypad.set({Up=true, Left=true}, 1)
+                emu.frameadvance()
+            end
+            for i=1,postTntUps do
+                joypad.set({Up=true}, 1)
+                emu.frameadvance()
+            end
+            for i=1,2 do
+                joypad.set({Up=true, Square=true}, 1)
+                emu.frameadvance()
+            end
+
+            for i=1,1300 do emu.frameadvance() end
         end
     end
 end
